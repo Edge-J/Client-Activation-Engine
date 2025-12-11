@@ -1,0 +1,260 @@
+# Prompt Templates for Client Activation Engine
+
+# Template Metadata
+metadata:
+  version: "1.0"
+  created_date: "2024-03-15"
+  last_updated: "2024-03-15"
+  description: "Prompt templates for client intake processing and analysis"
+
+# Intake Processing Templates
+intake_processing:
+  # Parse raw client input into structured format
+  parse_intake:
+    system_prompt: |
+      You are an expert business analyst specializing in client requirement extraction. 
+      Your task is to parse raw client communications and extract structured information.
+      
+      Extract the following information:
+      - Client/Company name
+      - Contact information (email, phone, name)
+      - Project title or description
+      - Functional requirements
+      - Technical requirements  
+      - Business constraints (budget, timeline)
+      - Integration needs
+      - Security/compliance requirements
+      
+      Provide output in structured JSON format.
+      
+    user_prompt_template: |
+      Please analyze the following client communication and extract structured requirements:
+      
+      Source Type: {source_type}
+      Content:
+      {raw_content}
+      
+      Extract all relevant project requirements, constraints, and client information.
+      
+  # Classify intake source type
+  classify_source:
+    system_prompt: |
+      Classify the type of client communication based on content and format.
+      
+      Possible types:
+      - email: Formal email communication
+      - form_submission: Structured form data
+      - direct_message: Informal chat or message
+      - phone_transcript: Transcribed phone conversation
+      - document: Uploaded document or file
+      
+    user_prompt_template: |
+      Classify this client communication:
+      
+      {raw_content}
+      
+      Return only the classification type.
+
+# Requirements Analysis Templates  
+requirements_analysis:
+  # Extract functional requirements
+  extract_functional:
+    system_prompt: |
+      You are a requirements analyst. Extract functional requirements from client input.
+      
+      Focus on:
+      - What the system should do (features, capabilities)
+      - User interactions and workflows
+      - Business processes to support
+      - Expected outcomes and goals
+      
+      Be specific and actionable. Avoid technical implementation details.
+      
+    user_prompt_template: |
+      Extract functional requirements from this client communication:
+      
+      {intake_content}
+      
+      List each requirement clearly and specifically.
+      
+  # Extract technical requirements
+  extract_technical:
+    system_prompt: |
+      Extract technical requirements and constraints from client input.
+      
+      Focus on:
+      - Technology preferences or constraints
+      - Performance requirements (speed, scale, load)
+      - Integration requirements (APIs, systems, platforms)
+      - Security and compliance needs
+      - Infrastructure and deployment preferences
+      - Data requirements (storage, processing, migration)
+      
+    user_prompt_template: |
+      Identify technical requirements from this client communication:
+      
+      {intake_content}
+      
+      Include performance, integration, security, and infrastructure needs.
+
+# Gap Analysis Templates
+gap_analysis:
+  # Identify missing information
+  identify_gaps:
+    system_prompt: |
+      Analyze extracted requirements and identify missing critical information.
+      
+      Common missing information categories:
+      - Technical Requirements: Architecture, technology stack, performance specs
+      - Business Logic: Detailed workflows, business rules, edge cases  
+      - Integration Details: API specifications, data formats, authentication
+      - Authentication: User management, access controls, security requirements
+      - Data Schema: Data models, relationships, validation rules
+      - UI Specifications: User experience, interface design, accessibility
+      - Deployment Config: Hosting, scaling, monitoring, backup requirements
+      - Performance Requirements: Load, response times, availability targets
+      
+      Prioritize gaps by impact on project success.
+      
+    user_prompt_template: |
+      Analyze these extracted requirements and identify missing information:
+      
+      Functional Requirements:
+      {functional_requirements}
+      
+      Technical Requirements:  
+      {technical_requirements}
+      
+      What critical information is missing? Categorize and prioritize gaps.
+      
+  # Generate follow-up questions
+  generate_questions:
+    system_prompt: |
+      Generate specific, actionable follow-up questions to gather missing information.
+      
+      Questions should be:
+      - Specific and focused
+      - Easy for the client to answer
+      - Grouped by category
+      - Prioritized by importance
+      
+      Avoid overwhelming the client with too many questions at once.
+      
+    user_prompt_template: |
+      Generate follow-up questions to address these information gaps:
+      
+      {missing_information}
+      
+      Create clear, specific questions grouped by category.
+
+# Asset Generation Templates
+asset_generation:
+  # Generate project documentation
+  generate_documentation:
+    system_prompt: |
+      Generate comprehensive project documentation based on gathered requirements.
+      
+      Include:
+      - Project overview and objectives
+      - Functional specifications
+      - Technical architecture
+      - Implementation plan
+      - Testing strategy
+      - Deployment guide
+      
+      Use clear, professional language suitable for both technical and business stakeholders.
+      
+    user_prompt_template: |
+      Generate project documentation based on these requirements:
+      
+      Client: {client_name}
+      Project: {project_title}
+      
+      Requirements:
+      {complete_requirements}
+      
+      Create comprehensive documentation covering all aspects of the project.
+      
+  # Generate code templates
+  generate_code:
+    system_prompt: |
+      Generate well-structured, production-ready code based on technical requirements.
+      
+      Follow best practices:
+      - Clean, readable code with proper comments
+      - Error handling and validation
+      - Security considerations
+      - Performance optimization
+      - Testing hooks and documentation
+      
+      Include setup instructions and usage examples.
+      
+    user_prompt_template: |
+      Generate code for this component:
+      
+      Component: {component_name}
+      Technology: {technology_stack}
+      Requirements: {technical_specs}
+      
+      Provide complete, production-ready implementation.
+
+# Quality Assurance Templates
+quality_assurance:
+  # Validate completeness
+  validate_completeness:
+    system_prompt: |
+      Assess the completeness of project requirements and deliverables.
+      
+      Check for:
+      - All functional requirements addressed
+      - Technical specifications complete
+      - Missing dependencies identified
+      - Risk factors considered
+      - Success criteria defined
+      
+      Provide a completeness score (0-100) and improvement recommendations.
+      
+    user_prompt_template: |
+      Evaluate completeness of this project analysis:
+      
+      {project_summary}
+      
+      Provide completeness score and recommendations for improvement.
+      
+  # Review generated assets  
+  review_assets:
+    system_prompt: |
+      Review generated assets for quality, accuracy, and completeness.
+      
+      Evaluate:
+      - Accuracy against requirements
+      - Code quality and best practices
+      - Documentation clarity and completeness
+      - Potential issues or gaps
+      - Improvement suggestions
+      
+    user_prompt_template: |
+      Review these generated assets:
+      
+      {asset_content}
+      
+      Requirements: {original_requirements}
+      
+      Provide quality assessment and improvement recommendations.
+
+# Error Handling Templates
+error_handling:
+  # Parse error recovery
+  recovery_prompt:
+    system_prompt: |
+      The previous analysis encountered an error. Provide a simplified, focused response.
+      
+      Focus on the most critical information and avoid complex analysis.
+      If input is unclear, make reasonable assumptions and note them.
+      
+    user_prompt_template: |
+      Previous analysis failed. Please provide a simplified response for:
+      
+      {original_request}
+      
+      Focus on key points only and note any assumptions made.

@@ -1,0 +1,149 @@
+# Model Configuration for Client Activation Engine
+
+# OpenAI Configuration
+openai:
+  model: "gpt-4"
+  max_tokens: 4096
+  temperature: 0.7
+  top_p: 1.0
+  frequency_penalty: 0.0
+  presence_penalty: 0.0
+  
+  # Request settings
+  timeout: 30
+  max_retries: 3
+  
+  # Rate limiting
+  requests_per_minute: 60
+  tokens_per_minute: 150000
+
+# Model Usage by Component
+component_models:
+  # Intake Processing
+  intake_parsing:
+    model: "gpt-4"
+    temperature: 0.3  # Lower temperature for consistent parsing
+    max_tokens: 2048
+    
+  # Requirements Analysis
+  requirements_extraction:
+    model: "gpt-4"
+    temperature: 0.5
+    max_tokens: 3072
+    
+  # Missing Information Detection  
+  gap_analysis:
+    model: "gpt-4"
+    temperature: 0.4
+    max_tokens: 2048
+    
+  # Asset Generation
+  code_generation:
+    model: "gpt-4"
+    temperature: 0.8  # Higher temperature for creative generation
+    max_tokens: 4096
+    
+  documentation_generation:
+    model: "gpt-4"
+    temperature: 0.6
+    max_tokens: 3072
+
+# Prompt Templates Configuration
+prompt_templates:
+  # Base directory for prompt template files
+  templates_directory: "config/prompt_templates"
+  
+  # Template files
+  intake_parsing: "intake_parsing.yaml"
+  requirements_extraction: "requirements_extraction.yaml"
+  gap_analysis: "gap_analysis.yaml"
+  asset_generation: "asset_generation.yaml"
+  
+  # Template validation
+  validate_templates: true
+  template_version: "1.0"
+
+# Context Management
+context:
+  # Maximum context length (tokens)
+  max_context_length: 8000
+  
+  # Context window management
+  context_overlap: 200
+  summarization_threshold: 6000
+  
+  # Memory settings
+  conversation_memory_limit: 50
+  working_memory_tokens: 2000
+
+# Quality Control
+quality_control:
+  # Output validation
+  validate_generated_code: true
+  syntax_check_languages: ["python", "javascript", "typescript", "yaml", "json"]
+  
+  # Content filtering
+  filter_sensitive_content: true
+  content_safety_threshold: 0.8
+  
+  # Consistency checks
+  cross_validate_requirements: true
+  verify_asset_completeness: true
+
+# Performance Optimization
+performance:
+  # Caching
+  enable_response_caching: true
+  cache_duration_hours: 24
+  cache_size_limit_mb: 512
+  
+  # Batch processing
+  enable_batch_requests: false
+  batch_size: 5
+  batch_timeout: 60
+  
+  # Parallel processing
+  max_concurrent_requests: 3
+  request_queue_size: 10
+
+# Model Fallbacks
+fallbacks:
+  # Primary model failures
+  primary_failure_model: "gpt-3.5-turbo"
+  
+  # Rate limit handling
+  rate_limit_fallback: "gpt-3.5-turbo"
+  rate_limit_retry_delay: 60
+  
+  # Cost management
+  cost_threshold_daily: 100.00  # USD
+  cost_fallback_model: "gpt-3.5-turbo"
+
+# Monitoring and Analytics
+monitoring:
+  # Usage tracking
+  track_token_usage: true
+  track_request_latency: true
+  track_success_rates: true
+  
+  # Cost monitoring
+  track_costs: true
+  cost_alert_threshold: 50.00  # USD daily
+  
+  # Performance monitoring
+  latency_alert_threshold: 10.0  # seconds
+  success_rate_threshold: 95.0  # percent
+
+# Development and Testing
+development:
+  # Mock responses for testing
+  enable_mock_responses: false
+  mock_response_delay: 1.0  # seconds
+  
+  # Debug settings
+  log_all_requests: false
+  log_response_content: false
+  
+  # Testing overrides
+  test_model_override: null
+  test_temperature_override: null

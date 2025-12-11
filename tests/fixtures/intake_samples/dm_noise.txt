@@ -1,0 +1,27 @@
+Subject: RE: Project Kickoff - Web App Development
+
+Hey team,
+
+Just wanted to follow up on our conversation from earlier. So basically what we're looking for is a web application that can handle our customer data management. We need something that our sales team can use to track leads and manage client relationships.
+
+The main features we discussed:
+- User authentication (probably just email/password for now)
+- Dashboard where users can see their assigned leads
+- Lead management - add, edit, delete leads
+- Basic reporting functionality
+- Maybe some kind of notification system when leads are updated
+
+We're expecting around 50 users initially, mostly our sales team and a few managers. The data isn't super sensitive but we do need basic security measures in place.
+
+Budget wise we're thinking around $25k for the initial development, with potential for ongoing maintenance contracts.
+
+Timeline is pretty flexible but we'd love to have something up and running within 3-4 months if possible.
+
+Let me know if you need any more details or if there are other questions I should be thinking about.
+
+Thanks!
+Sarah Chen
+VP of Sales
+TechCorp Solutions
+sarah.chen@techcorp.com
+(555) 123-4567

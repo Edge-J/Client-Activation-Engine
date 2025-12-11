@@ -1,0 +1,112 @@
+# System Constraints Configuration for Client Activation Engine
+
+# Version Information
+version: "0.1.0"
+api_version: "v1"
+schema_version: "1.0"
+
+# Client Tier Definitions
+client_tiers:
+  starter:
+    name: "Starter"
+    max_assets: 5
+    max_concurrent_workflows: 1
+    priority_level: "low"
+    features:
+      - basic_intake
+      - simple_analysis
+      - template_generation
+    
+  business:
+    name: "Business" 
+    max_assets: 20
+    max_concurrent_workflows: 3
+    priority_level: "medium"
+    features:
+      - advanced_intake
+      - detailed_analysis
+      - custom_generation
+      - workflow_automation
+    
+  premium:
+    name: "Premium"
+    max_assets: 100
+    max_concurrent_workflows: 10
+    priority_level: "high"
+    features:
+      - enterprise_intake
+      - deep_analysis
+      - advanced_generation
+      - full_automation
+      - custom_integrations
+
+# Asset Type Constraints
+asset_types:
+  documentation:
+    max_size_mb: 50
+    allowed_formats: ["md", "pdf", "docx", "html"]
+    template_required: false
+    
+  code:
+    max_size_mb: 100
+    allowed_languages: ["python", "javascript", "typescript", "yaml", "json"]
+    security_scan_required: true
+    
+  configuration:
+    max_size_mb: 10
+    allowed_formats: ["yaml", "json", "toml", "ini"]
+    validation_required: true
+    
+  template:
+    max_size_mb: 25
+    allowed_formats: ["jinja2", "mustache", "handlebars"]
+    preview_required: true
+
+# Processing Limits
+processing_limits:
+  max_input_size_mb: 500
+  max_processing_time_minutes: 30
+  max_retry_attempts: 3
+  timeout_seconds: 300
+
+# Dependency Audit Requirements  
+dependencies:
+  security_scan_required: true
+  license_compliance_required: true
+  vulnerability_threshold: "medium"
+  allowed_licenses:
+    - "MIT"
+    - "Apache-2.0"
+    - "BSD-3-Clause" 
+    - "ISC"
+  
+# Data Retention Policy
+data_retention:
+  intake_data_days: 90
+  processing_logs_days: 30
+  generated_assets_days: 365
+  error_logs_days: 14
+
+# Cross-Reference Mappings
+enum_mappings:
+  client_tiers:
+    - starter
+    - business 
+    - premium
+  asset_types:
+    - documentation
+    - code
+    - configuration
+    - template
+    - specification
+    - diagram
+    - report
+  missing_info_categories:
+    - technical_requirements
+    - business_logic
+    - integration_details
+    - authentication
+    - data_schema
+    - ui_specifications
+    - deployment_config
+    - performance_requirements

@@ -1,0 +1,159 @@
+# Orchestrator Configuration for Client Activation Engine
+
+# Loop Parameters
+loop_config:
+  max_iterations: 50
+  iteration_timeout_seconds: 30
+  backoff_strategy: "exponential"
+  max_backoff_seconds: 300
+  
+  # State Management
+  checkpoint_interval: 5  # Save state every N iterations
+  resume_on_failure: true
+  state_persistence_path: "data/output/orchestrator_state"
+
+# Tool Configuration
+tools:
+  # Discovery and Search
+  discovery_timeout_seconds: 10
+  search_timeout_seconds: 15
+  
+  # Execution Limits
+  max_parallel_tools: 3
+  tool_execution_timeout: 60
+  allow_nested_execution: false
+  
+  # Available Tool Categories
+  enabled_categories:
+    - intake
+    - analysis
+    - generation
+    - skills
+  
+  # Tool-specific Settings
+  tool_configs:
+    intake:
+      max_input_size_mb: 100
+      supported_formats: ["txt", "pdf", "docx", "eml", "json"]
+      
+    analysis:
+      confidence_threshold: 0.7
+      max_missing_items: 20
+      
+    generation:
+      max_assets_per_run: 10
+      template_cache_enabled: true
+      
+    skills:
+      allow_external_calls: false
+      sandbox_enabled: true
+
+# Memory and Context
+memory:
+  max_context_size_tokens: 8000
+  context_window_overlap: 200
+  
+  # Conversation Memory
+  conversation_history_limit: 50
+  summarization_threshold: 30
+  
+  # Working Memory
+  working_memory_size_mb: 256
+  temp_file_cleanup_interval: 3600  # seconds
+
+# Error Handling
+error_handling:
+  max_retries_per_tool: 3
+  retry_delay_seconds: 5
+  
+  # Failure Recovery
+  graceful_degradation: true
+  fallback_tools_enabled: true
+  
+  # Critical Errors (halt execution)
+  critical_error_patterns:
+    - "authentication_failed"
+    - "insufficient_permissions"
+    - "rate_limit_exceeded"
+    - "system_overload"
+
+# Monitoring and Logging
+monitoring:
+  # Performance Metrics
+  track_execution_time: true
+  track_memory_usage: true
+  track_tool_success_rate: true
+  
+  # Progress Reporting
+  progress_update_interval: 10  # seconds
+  detailed_logging_enabled: true
+  
+  # Health Checks
+  health_check_interval: 60  # seconds
+  resource_usage_alerts: true
+
+# Workflow Templates
+workflow_templates:
+  # Standard Client Onboarding
+  standard_onboarding:
+    name: "Standard Client Onboarding"
+    description: "Complete intake to asset generation workflow"
+    steps:
+      - name: "intake_processing"
+        tool: "intake.process_raw_input"
+        timeout: 120
+      - name: "requirement_extraction" 
+        tool: "analysis.extract_requirements"
+        depends_on: ["intake_processing"]
+        timeout: 180
+      - name: "gap_analysis"
+        tool: "analysis.identify_missing_info"
+        depends_on: ["requirement_extraction"] 
+        timeout: 120
+      - name: "asset_generation"
+        tool: "generation.generate_assets"
+        depends_on: ["gap_analysis"]
+        timeout: 300
+        
+  # Quick Assessment
+  quick_assessment:
+    name: "Quick Assessment"
+    description: "Rapid analysis for initial client evaluation"
+    steps:
+      - name: "intake_parsing"
+        tool: "intake.parse_basic_info"
+        timeout: 60
+      - name: "basic_analysis"
+        tool: "analysis.basic_assessment"
+        depends_on: ["intake_parsing"]
+        timeout: 90
+
+# Integration Settings
+integrations:
+  # External APIs
+  external_apis_enabled: false
+  api_rate_limits:
+    default: 100  # requests per minute
+    
+  # File System
+  file_operations_enabled: true
+  allowed_file_extensions: [".txt", ".md", ".json", ".yaml", ".py"]
+  
+  # Notifications
+  notifications_enabled: false
+  notification_channels: []
+
+# Security Settings
+security:
+  # Sandbox Constraints  
+  sandbox_execution: true
+  network_access_allowed: false
+  file_system_isolation: true
+  
+  # Input Validation
+  validate_all_inputs: true
+  sanitize_outputs: true
+  
+  # Access Control
+  require_client_authorization: true
+  audit_all_actions: true
