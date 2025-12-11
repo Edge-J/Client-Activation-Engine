@@ -5,11 +5,21 @@ This module provides the interface for discovering and executing tools
 from the MCP servers directory structure.
 """
 
+import asyncio
+import importlib
+import importlib.util
+import inspect
+import logging
+import os
+import sys
+import time
 from pathlib import Path
 from typing import Any, Protocol
 
 from ..core.enums import ToolCategory
 from ..core.schema_definitions import ValidationResult
+
+logger = logging.getLogger(__name__)
 
 
 class ToolInfo:
@@ -143,15 +153,64 @@ class MCPToolsInterface:
         if not tool:
             raise ValueError(f"Tool not found: {tool_name}")
             
-        # TODO: Implement actual tool execution
-        # This is a placeholder for future implementation
-        return {
-            "tool_name": tool_name,
-            "category": tool.category.value,
-            "status": "executed",
-            "parameters": parameters,
-            "result": f"Mock execution result for {tool_name}",
-        }
+        try:
+            # Import the actual tool module
+            # Handle relative imports by temporarily changing working directory
+            project_root = Path(__file__).parent.parent.parent
+            original_cwd = Path.cwd()
+            original_path = sys.path[:]
+            
+            # Add project root to sys.path and change to project directory
+            if str(project_root) not in sys.path:
+                sys.path.insert(0, str(project_root))
+            os.chdir(str(project_root))
+            
+            try:
+                module = importlib.import_module(tool.module_path)
+            finally:
+                # Restore original working directory and sys.path
+                os.chdir(str(original_cwd))
+                sys.path[:] = original_path
+            
+            # All MCP tools should have a 'run' function that accepts a parameters dict
+            if hasattr(module, "run"):
+                tool_function = getattr(module, "run")
+            else:
+                # Fallback to other common function names
+                for func_name in ["main", "execute", "process"]:
+                    if hasattr(module, func_name):
+                        tool_function = getattr(module, func_name)
+                        break
+                else:
+                    error_msg = f"No run/main function found in tool module: {tool.module_path}"
+                    raise RuntimeError(error_msg)
+            
+            # Check if the function is async
+            if inspect.iscoroutinefunction(tool_function):
+                # For async functions, use asyncio.run() to execute them
+                result = asyncio.run(tool_function(parameters))
+            else:
+                # For sync functions, call with parameters dict (not unpacked)
+                result = tool_function(parameters)
+            
+            return {
+                "tool_name": tool_name,
+                "category": tool.category.value,
+                "status": "success",
+                "parameters": parameters,
+                "result": result,
+                "execution_time": time.time(),
+            }
+            
+        except ImportError as e:
+            error_msg = f"Failed to import tool module {tool.module_path}: {str(e)}"
+            logger.error(error_msg)
+            raise RuntimeError(error_msg) from e
+            
+        except Exception as e:
+            error_msg = f"Tool execution failed for {tool_name}: {str(e)}"
+            logger.error(error_msg)
+            raise RuntimeError(error_msg) from e
     
     def validate_tool_parameters(
         self, 
@@ -177,7 +236,38 @@ class MCPToolsInterface:
                 score=0.0,
             )
         
-        # TODO: Implement parameter validation based on tool schema
+        errors = []
+        warnings = []
+        
+        # Validate required parameters
+        if tool.parameters:
+            for param_name, param_info in tool.parameters.items():
+                if param_info.get("required", False) and param_name not in parameters:
+                    errors.append(f"Missing required parameter: {param_name}")
+                    
+            # Validate parameter types (basic validation)
+            for param_name, param_value in parameters.items():
+                if param_name in tool.parameters:
+                    expected_type = tool.parameters[param_name].get("type")
+                    if expected_type:
+                        if expected_type == "string" and not isinstance(param_value, str):
+                            errors.append(f"Parameter {param_name} should be string, got {type(param_value).__name__}")
+                        elif expected_type == "integer" and not isinstance(param_value, int):
+                            errors.append(f"Parameter {param_name} should be integer, got {type(param_value).__name__}")
+                        elif expected_type == "boolean" and not isinstance(param_value, bool):
+                            errors.append(f"Parameter {param_name} should be boolean, got {type(param_value).__name__}")
+                else:
+                    warnings.append(f"Unknown parameter: {param_name}")
+        
+        is_valid = len(errors) == 0
+        score = 1.0 if is_valid else max(0.0, 1.0 - (len(errors) * 0.2))
+        
+        return ValidationResult(
+            is_valid=is_valid,
+            errors=errors,
+            warnings=warnings,
+            score=score,
+        )
         # For now, basic validation
         errors = []
         warnings = []
@@ -250,11 +340,16 @@ class MCPToolsInterface:
                 
             # Create tool info from module
             tool_name = f"{category.value}.{py_file.stem}"
+            
+            # Convert filesystem path to Python module path
+            # e.g., mcp_servers/intake/parse_intake.py -> mcp_servers.intake.parse_intake
+            module_path = f"mcp_servers.{category.value}.{py_file.stem}"
+            
             tool = ToolInfo(
                 name=tool_name,
                 category=category,
                 description=f"Tool from {py_file.name}",
-                module_path=str(py_file),
+                module_path=module_path,
                 parameters={
                     "properties": {},
                     "required": [],

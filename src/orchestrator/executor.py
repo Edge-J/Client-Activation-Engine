@@ -15,7 +15,11 @@ from uuid import UUID, uuid4
 
 from src.core.enums import ProcessingStatus
 from src.core.schema_definitions import BaseSchema, ValidationResult
-from src.sandbox.sandbox_runner import SandboxRunner, create_mcp_tool_sandbox
+from src.sandbox.sandbox_runner import (
+    SandboxRunner, 
+    SandboxResult, 
+    SandboxConstraints
+)
 
 
 class ExecutorInterface(Protocol):

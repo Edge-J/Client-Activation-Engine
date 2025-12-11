@@ -1,0 +1,37 @@
+{
+  "business_name": "TechStart Solutions",
+  "contact_email": "founder@techstart.com",
+  "contact_phone": "+1-555-123-4567",
+  "business_type": "technology_services",
+  "industry": "software_development",
+  "project_description": "We need a modern web application for project management with real-time collaboration features.",
+  "requirements": [
+    "User authentication and authorization system",
+    "Real-time project dashboard with progress tracking",
+    "Team collaboration features with chat integration",
+    "Task management with assignment and deadline tracking",
+    "File sharing and document management",
+    "Reporting and analytics dashboard",
+    "Mobile-responsive design",
+    "Integration with popular development tools"
+  ],
+  "budget_range": "medium",
+  "timeline": "3-4 months",
+  "technical_preferences": {
+    "frontend": "React or Vue.js preferred",
+    "backend": "Node.js or Python",
+    "database": "PostgreSQL or MongoDB",
+    "deployment": "AWS or Google Cloud"
+  },
+  "existing_systems": [
+    "GitHub for code repository",
+    "Slack for team communication",
+    "Jira for current task tracking"
+  ],
+  "success_criteria": [
+    "Improve team productivity by 30%",
+    "Reduce project delivery time by 20%",
+    "Centralize all project information in one platform",
+    "Support up to 50 concurrent users"
+  ]
+}

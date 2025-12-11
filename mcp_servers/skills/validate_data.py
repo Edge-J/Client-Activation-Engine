@@ -50,20 +50,15 @@ def get_tool_metadata() -> dict[str, Any]:
     }
 
 
-async def run(
-    data: dict[str, Any],
-    validation_rules: dict[str, Any],
-    validation_level: str = "moderate",
-    **kwargs: Any,
-) -> dict[str, Any]:
+async def run(parameters: dict[str, Any]) -> dict[str, Any]:
     """
     Validate and sanitize data according to specified rules.
     
     Args:
-        data: Data to validate
-        validation_rules: Validation rules and constraints
-        validation_level: Validation strictness level
-        **kwargs: Additional parameters
+        parameters: Tool execution parameters containing:
+            - data: Data to validate
+            - validation_rules: Validation rules and constraints  
+            - validation_level: Validation strictness level (optional, default: "moderate")
         
     Returns:
         Dictionary containing validation results and sanitized data
@@ -71,6 +66,11 @@ async def run(
     Raises:
         ValueError: If input parameters are invalid
     """
+    # Unpack parameters from the input dictionary
+    data = parameters.get("data", {})
+    validation_rules = parameters.get("validation_rules", {})
+    validation_level = parameters.get("validation_level", "moderate")
+    
     # Validate inputs
     if not isinstance(data, dict):
         msg = "Data must be a dictionary"

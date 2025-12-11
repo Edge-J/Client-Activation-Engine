@@ -115,6 +115,18 @@ class WorkingMemory:
         item.access()
         return item.value
     
+    def get(self, key: str) -> Any | None:
+        """
+        Get an item from working memory (alias for retrieve).
+        
+        Args:
+            key: Item identifier
+            
+        Returns:
+            Stored value or None if not found/expired
+        """
+        return self.retrieve(key)
+    
     def exists(self, key: str) -> bool:
         """Check if a key exists and is not expired."""
         if key not in self._items:

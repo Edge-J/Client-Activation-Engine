@@ -53,22 +53,16 @@ def get_tool_metadata() -> dict[str, Any]:
     }
 
 
-async def run(
-    requirements: dict[str, Any],
-    asset_type: str,
-    technology_stack: dict[str, Any] | None = None,
-    output_config: dict[str, Any] | None = None,
-    **kwargs: Any,
-) -> dict[str, Any]:
+async def run(parameters: dict[str, Any]) -> dict[str, Any]:
     """
     Generate code and documentation based on requirements.
     
     Args:
-        requirements: Extracted requirements from analysis phase
-        asset_type: Type of asset to generate
-        technology_stack: Technology preferences and constraints
-        output_config: Output configuration and preferences
-        **kwargs: Additional parameters
+        parameters: Tool execution parameters containing:
+            - requirements: Extracted requirements from analysis phase
+            - asset_type: Type of asset to generate
+            - technology_stack: Technology preferences and constraints (optional)
+            - output_config: Output configuration and preferences (optional)
         
     Returns:
         Dictionary containing generated asset content and metadata
@@ -77,6 +71,12 @@ async def run(
         ValueError: If input parameters are invalid
         RuntimeError: If generation fails
     """
+    # Unpack parameters from the input dictionary
+    requirements = parameters.get("requirements", {})
+    asset_type = parameters.get("asset_type", "")
+    technology_stack = parameters.get("technology_stack")
+    output_config = parameters.get("output_config")
+    
     # Validate inputs
     if not requirements or not isinstance(requirements, dict):
         msg = "Invalid requirements data"
