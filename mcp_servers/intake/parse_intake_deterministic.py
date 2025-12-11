@@ -33,41 +33,41 @@ def get_tool_metadata() -> Dict[str, Any]:
                 "input_data": {
                     "type": "string", 
                     "description": "Raw intake content to parse",
-                    "required": True,
+                    "required": True
                 },
                 "source_type": {
                     "type": "string",
                     "enum": ["form_submission", "email_thread", "direct_message", "auto_detect"],
                     "description": "Type of input source",
-                    "default": "auto_detect",
+                    "default": "auto_detect"
                 },
                 "client_tier": {
                     "type": "string", 
                     "enum": ["starter", "business", "premium"],
                     "description": "Client tier for processing context",
-                    "default": "business",
-                },
+                    "default": "business"
+                }
             },
-            "required": ["input_data"],
+            "required": ["input_data"]
         },
         "output_schema": {
             "type": "object",
             "properties": {
                 "intake_data": {
                     "type": "object",
-                    "description": "Parsed and structured intake information",
+                    "description": "Parsed and structured intake information"
                 },
                 "confidence_score": {
                     "type": "number",
-                    "description": "Confidence in parsing accuracy (0-1)",
+                    "description": "Confidence in parsing accuracy (0-1)"
                 },
                 "data_quality": {
                     "type": "string",
-                    "enum": ["high", "medium", "low"],
-                },
-            },
+                    "enum": ["high", "medium", "low"]
+                }
+            }
         },
-        "dependencies": ["mcp_servers.skills.cleaning", "mcp_servers.skills.validators"],
+        "dependencies": ["mcp_servers.skills.cleaning", "mcp_servers.skills.validators"]
     }
 
 
@@ -117,7 +117,7 @@ def run(parameters: Dict[str, Any]) -> Dict[str, Any]:
         "original_length": len(input_data),
         "normalized_length": len(normalized_content),
         "processing_timestamp": datetime.utcnow().isoformat(),
-        "client_tier": client_tier,
+        "client_tier": client_tier
     }
     
     # Calculate quality metrics
@@ -137,8 +137,8 @@ def run(parameters: Dict[str, Any]) -> Dict[str, Any]:
             "version": "1.0.0",
             "timestamp": datetime.utcnow().isoformat(),
             "client_tier": client_tier,
-            "source_type": source_type,
-        },
+            "source_type": source_type
+        }
     }
 
 
@@ -383,7 +383,7 @@ def _extract_requirements_structured(content: str) -> List[Dict[str, Any]]:
                 "type": req_type,
                 "confidence": min(0.9, len(matches) * 0.3),
                 "evidence": matches[:3],  # First 3 matches
-                "source": "structured_content",
+                "source": "structured_content"
             })
     
     return requirements
@@ -409,7 +409,7 @@ def _extract_requirements_conversational(content: str) -> List[Dict[str, Any]]:
                     "type": req_type,
                     "confidence": 0.7,
                     "evidence": [pattern],
-                    "source": "conversational_content",
+                    "source": "conversational_content"
                 })
                 break  # Only add once per type
     
@@ -497,7 +497,7 @@ def _extract_budget_info(content: str) -> Dict[str, Any]:
                 "amount": amount,
                 "currency": "USD",
                 "type": "estimated",
-                "confidence": 0.7,
+                "confidence": 0.7
             }
         except ValueError:
             pass
@@ -567,7 +567,7 @@ def _extract_business_phrases(content: str) -> List[str]:
     """Extract key business-related phrases."""
     business_keywords = [
         "website", "app", "system", "platform", "integration", "database",
-        "crm", "ecommerce", "payment", "analytics", "security", "mobile",
+        "crm", "ecommerce", "payment", "analytics", "security", "mobile"
     ]
     
     phrases = []
@@ -625,7 +625,7 @@ def _validate_parsed_data(parsed_data: Dict[str, Any]) -> Dict[str, Any]:
     validation_results = {
         "valid_fields": [],
         "invalid_fields": [],
-        "warnings": [],
+        "warnings": []
     }
     
     # Validate email
@@ -652,12 +652,14 @@ def _validate_parsed_data(parsed_data: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def _validate_email(email: str) -> bool:
-    """Simple email validation using shared validators."""
-    from mcp_servers.skills.validators import validate_email
-    return validate_email(email)
+    """Simple email validation."""
+    pattern = r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}$'
+    return bool(re.match(pattern, email))
 
 
 def _validate_phone(phone: str) -> bool:
-    """Simple phone validation using shared validators."""
-    from mcp_servers.skills.validators import validate_phone
-    return validate_phone(phone)
+    """Simple phone validation."""
+    # Remove all non-digits
+    digits = re.sub(r'\D', '', phone)
+    # Check if it's 10 or 11 digits (with country code)
+    return len(digits) in [10, 11]

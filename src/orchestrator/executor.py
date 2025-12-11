@@ -1,15 +1,21 @@
 """
-Executor interface for the orchestration system.
+Enhanced executor interface for orchestration workflows.
 
-This module defines the interface that the reasoning loop will use to
-execute code snippets and tools safely in the sandbox environment.
+This module provides structured execution results and integrates with
+the hardened sandbox runner for secure MCP tool execution.
 """
 
-from typing import Any, Protocol
+import json
+import logging
+import time
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Protocol
+from uuid import UUID, uuid4
 
-from ..core.enums import ProcessingStatus
-from ..core.schema_definitions import ValidationResult
-from ..sandbox.sandbox_runner import SandboxRunner, SandboxResult, SandboxConstraints
+from src.core.enums import ProcessingStatus
+from src.core.schema_definitions import BaseSchema, ValidationResult
+from src.sandbox.sandbox_runner import SandboxRunner, create_mcp_tool_sandbox
 
 
 class ExecutorInterface(Protocol):
